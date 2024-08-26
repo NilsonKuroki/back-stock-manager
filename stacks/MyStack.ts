@@ -6,7 +6,7 @@ import * as route53 from "aws-cdk-lib/aws-route53";
 
 export function API({ stack, app }: StackContext) {
   const cognito = new Cognito(stack, "Auth", {
-    login: ["email", "preferredUsername"],
+    login: ["email", "preferredUsername", "username"],
     triggers: {
       customMessage: {
         handler: "packages/functions/customMessage.handler",
@@ -117,14 +117,37 @@ export function API({ stack, app }: StackContext) {
       authorizer: "jwt"
     },
     routes: {
-      "GET /": "packages/functions/src/lambda.handler",
-      "GET /todo": "packages/functions/src/todo.list",
-      "POST /todo": "packages/functions/src/todo.create",
+      "POST /auth/signin": {
+        function: {
+          handler: "packages/functions/src/signin/signin.handler"
+        },
+        authorizer: "none"
+      },
+      "POST /auth/signup": {
+        function: {
+          handler: "packages/functions/src/signin/signup.handler"
+        }
+      },
+      "POST /auth/complete-new-password": {
+        function: {
+          handler: "packages/functions/src/signin/completeNewPassword.handler"
+        },
+        authorizer: "none"
+      }
     },
   });
 
 
   stack.addOutputs({
-    ApiEndpoint: api.url,
+    UserPoolId: cognito.userPoolId,
+    IdentityPoolId: cognito.cognitoIdentityPoolId,
+    UserPoolClientId: cognito.userPoolClientId,
+    userPoolClientId: client.userPoolClientId,
+    RDSClusterArn: cluster.clusterArn,
+    RDSClusterEndpointHostname: cluster.clusterEndpoint.hostname,
+    RDSClusterEndpointPort: cluster.clusterEndpoint.port.toFixed(0),
+    RDSClusterSecretArn: cluster.secretArn,
+    RDSClusterIdentifier: cluster.clusterIdentifier,
+    APIURL: api.url,
   });
 }

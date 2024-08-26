@@ -1,6 +1,7 @@
 export function success(evt: any, body: any, headers: any = {}, isBase64Encoded: boolean = false) {
     return buildResponse(evt, 200, body, headers, isBase64Encoded);
 }
+
 export function failure(evt: any, body: any, headers: any = {}, isBase64Encoded: boolean = false) {
     return buildResponse(evt, 500, body, headers, isBase64Encoded);
 }
