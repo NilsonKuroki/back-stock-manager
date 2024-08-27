@@ -4,9 +4,9 @@ export const handler: APIGatewayProxyHandlerV2 = async (_evt: any) => {
   if (_evt.triggerSource === "CustomMessage_AdminCreateUser") {
     const message = `
       Você foi convidado para a plataforma da ${process.env.companyName}.
-      \r\n\r\n
+      \n\n
       Use o email de login com a senha temporária a seguir: ${_evt.request.codeParameter}
-      \r\n\r\n
+      \n\n
       Código de usuário: ${_evt.request.usernameParameter}
     `;
     _evt.response.emailMessage = message;

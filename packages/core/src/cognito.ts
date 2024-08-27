@@ -54,14 +54,14 @@ export const completeNewPasswordCognito = async (value: any, cognitoClient: any)
   }
 }
 
-export const createUserCognito = async (_evt: any, value: any, userPoolId: string, userGroup: string) => {
+export const signupUserCognito = async (_evt: any, value: any, userPoolId: any) => {
   try {
     const clientCognito = new CognitoIdentityProviderClient({})
     let userCognitoExist = false
     try {
       const commandGetUser = new AdminGetUserCommand({
         UserPoolId: userPoolId,
-        Username: value.cpfCnpj
+        Username: value.document
       });
       const userCognito = await clientCognito.send(commandGetUser);
       const userEmail: any = userCognito.UserAttributes?.find((atr) => atr.Name === "email")
@@ -77,7 +77,7 @@ export const createUserCognito = async (_evt: any, value: any, userPoolId: strin
     if (userCognitoExist === false) {
       const command = await new AdminCreateUserCommand({
         UserPoolId: userPoolId,
-        Username: value.cpfCnpj,
+        Username: value.document,
         UserAttributes: [
           {
             Name: "name",
@@ -97,7 +97,7 @@ export const createUserCognito = async (_evt: any, value: any, userPoolId: strin
           },
           {
             Name: "preferred_username",
-            Value: value.cpfCnpj
+            Value: value.document
           }
         ],
         DesiredDeliveryMediums: ["EMAIL"],
@@ -105,40 +105,13 @@ export const createUserCognito = async (_evt: any, value: any, userPoolId: strin
       })
 
       responseUserCognito = await clientCognito.send(command)
-
-      let groupExist = false
-
-      try {
-        const paramsGetGroups = new GetGroupCommand({
-          GroupName: userGroup,
-          UserPoolId: userPoolId
-        });
-        await clientCognito.send(paramsGetGroups)
-        groupExist = true
-      } catch (error) {
-        const paramsCreateGroup = new CreateGroupCommand({
-          GroupName: userGroup,
-          UserPoolId: userPoolId,
-          Description: `group ${userGroup}`
-        })
-        await clientCognito.send(paramsCreateGroup)
-        groupExist = true
-      }
-      if (groupExist) {
-        const paramsAddToGroupUser = new AdminAddUserToGroupCommand({
-          UserPoolId: userPoolId,
-          Username: responseUserCognito.User?.Username,
-          GroupName: userGroup
-        })
-        await clientCognito.send(paramsAddToGroupUser)
-      }
     }
 
     const subAttribute = responseUserCognito.User.Attributes.find((attribute: any) => attribute.Name === 'sub');
     const subValue = subAttribute ? subAttribute.Value : null;
     return { id: subValue }
   } catch (error: any) {
-    return badRequest(_evt, { error: error })
+    throw error
   }
 }
 
