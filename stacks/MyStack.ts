@@ -6,7 +6,7 @@ import * as route53 from "aws-cdk-lib/aws-route53";
 
 export function API({ stack, app }: StackContext) {
   const cognito = new Cognito(stack, "Auth", {
-    login: ["email", "preferredUsername", "username"],
+    login: ["email"],
     triggers: {
       customMessage: {
         handler: "packages/functions/customMessage.handler",
@@ -23,7 +23,6 @@ export function API({ stack, app }: StackContext) {
         standardAttributes: {
           fullname: { required: true, mutable: true },
           email: { required: true, mutable: true },
-          preferredUsername: { required: true, mutable: true },
           phoneNumber: { required: true, mutable: true }
         },
         customAttributes: {
@@ -119,18 +118,19 @@ export function API({ stack, app }: StackContext) {
     routes: {
       "POST /auth/signin": {
         function: {
-          handler: "packages/functions/src/signin/signin.handler"
+          handler: "packages/functions/src/auth/signin.handler"
         },
         authorizer: "none"
       },
       "POST /auth/signup": {
         function: {
-          handler: "packages/functions/src/signin/signup.handler"
-        }
+          handler: "packages/functions/src/auth/signup.handler"
+        },
+        authorizer: "none"
       },
       "POST /auth/complete-new-password": {
         function: {
-          handler: "packages/functions/src/signin/completeNewPassword.handler"
+          handler: "packages/functions/src/auth/completeNewPassword.handler"
         },
         authorizer: "none"
       }

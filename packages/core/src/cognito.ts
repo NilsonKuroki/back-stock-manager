@@ -22,7 +22,6 @@ export const signinCognito = async (value: any, cognitoClient: any) => {
       "ClientId": cognitoClient
     }
     const command = new InitiateAuthCommand(input);
-    
     const response = await client.send(command);
 
     return response
@@ -38,15 +37,15 @@ export const completeNewPasswordCognito = async (value: any, cognitoClient: any)
 
     const input: any = {
       "ChallengeName": "NEW_PASSWORD_REQUIRED",
-      "ChallengeResponses": { 
-        "NEW_PASSWORD": value.newPassword, 
+      "ChallengeResponses": {
+        "NEW_PASSWORD": value.newPassword,
         "USERNAME": value.username
       },
       "ClientId": cognitoClient,
-      "Session": value.session,
-   }
+      "Session": value.session
+    }
     const command = new RespondToAuthChallengeCommand(input);
-    
+
     const response = await client.send(command);
     return response
   } catch (error) {
@@ -77,7 +76,7 @@ export const signupUserCognito = async (_evt: any, value: any, userPoolId: any) 
     if (userCognitoExist === false) {
       const command = await new AdminCreateUserCommand({
         UserPoolId: userPoolId,
-        Username: value.document,
+        Username: value.email,
         UserAttributes: [
           {
             Name: "name",
@@ -93,7 +92,7 @@ export const signupUserCognito = async (_evt: any, value: any, userPoolId: any) 
           },
           {
             Name: "phone_number",
-            Value: `+55${value.mobilePhone}`
+            Value: `+55${value.phoneNumber}`
           },
           {
             Name: "preferred_username",

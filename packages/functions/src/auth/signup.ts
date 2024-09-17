@@ -7,11 +7,11 @@ import { verifyUserAccess } from "@backend-stock-manager/core/auth"
 
 export const handler = async (_evt: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> => {
   try {
-    const userCanAccess = await verifyUserAccess(_evt)
-    if (!userCanAccess) {
-      return accessDenied(_evt, "Not authorized")
-    }
-    
+    // const userCanAccess = await verifyUserAccess(_evt)
+    // if (!userCanAccess) {
+    //   return accessDenied(_evt, "Not authorized")
+    // }
+
     const body = JSON.parse(_evt.body || "{}")
     const { error, value } = signupSchema.validate(body);
     if (error) {
@@ -25,12 +25,11 @@ export const handler = async (_evt: APIGatewayProxyEventV2WithJWTAuthorizer): Pr
       phoneNumber: value.phoneNumber,
       group: value.group
     }
-
+    
     const response = await signupUserCognito(_evt, inputCognito, process.env.userPoolId)
-
     return success(_evt, {
       message: "Success signup",
-      response: "Passei"
+      response: response
     })
   } catch (error: any) {
     return failure(_evt, UNEXPECTED)
