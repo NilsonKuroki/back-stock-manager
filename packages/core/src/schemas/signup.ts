@@ -5,7 +5,7 @@ export const signupSchema = Joi.object({
     name: Joi.string()
         .min(3)
         .required(),
-    phoneNumber: Joi.string()
+    mobilePhone: Joi.string()
         .pattern(/^[1-9]{2}9[0-9]{8}$/)
         .required(),
     email: Joi.string()

@@ -3,6 +3,7 @@ import { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from
 import { UNEXPECTED } from "@backend-stock-manager/core/errorTypes";
 import { signupUserCognito } from "@backend-stock-manager/core/cognito";
 import { signupSchema } from "@backend-stock-manager/core/schemas/signup"
+import { createUser } from '@backend-stock-manager/core/db/userService'
 import { verifyUserAccess } from "@backend-stock-manager/core/auth"
 
 export const handler = async (_evt: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> => {
@@ -22,14 +23,26 @@ export const handler = async (_evt: APIGatewayProxyEventV2WithJWTAuthorizer): Pr
       password: value.password,
       document: value.document,
       email: value.email,
-      phoneNumber: value.phoneNumber,
+      mobilePhone: value.mobilePhone,
       group: value.group
     }
     
-    const response = await signupUserCognito(_evt, inputCognito, process.env.userPoolId)
+    const cognitoSignupResponse: any = await signupUserCognito(_evt, inputCognito, process.env.userPoolId)
+    
+    const inputDb = {
+      cognitoId: cognitoSignupResponse.id,
+      name: value.name,
+      document: value.document,
+      email: value.email,
+      mobilePhone: value.mobilePhone,
+      status: value.status
+    }
+
+    const signupDbResponse = await createUser(inputDb)
+
     return success(_evt, {
       message: "Success signup",
-      response: response
+      response: signupDbResponse
     })
   } catch (error: any) {
     return failure(_evt, UNEXPECTED)

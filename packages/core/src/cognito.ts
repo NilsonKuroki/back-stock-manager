@@ -92,7 +92,7 @@ export const signupUserCognito = async (_evt: any, value: any, userPoolId: any) 
           },
           {
             Name: "phone_number",
-            Value: `+55${value.phoneNumber}`
+            Value: `+55${value.mobilePhone}`
           },
           {
             Name: "preferred_username",

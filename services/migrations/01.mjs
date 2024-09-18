@@ -13,7 +13,6 @@ export async function up(db) {
     .addColumn("name", "varchar", (col) => col.notNull())
     .addColumn("email", "varchar", (col) => col.notNull().unique())
     .addColumn("document", "varchar", (col) => col.notNull().unique())
-    .addColumn("birthDate", "varchar", (col) => col.notNull())
     .addColumn("mobilePhone", "varchar", (col) => col.notNull())
     .addColumn("status", 'status', (col) => col.defaultTo("active").notNull())
     .addColumn("createdAt", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
