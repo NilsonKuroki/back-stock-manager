@@ -1,4 +1,4 @@
-import { db, sql } from '@backend-stock-manager/core/src/kysely'
+import { db, sql } from '@backend-stock-manager/core/src/db/connectDb'
 
 export const createUser = async (value: any) => {
     try {
@@ -16,6 +16,19 @@ export const createUser = async (value: any) => {
         .executeTakeFirstOrThrow()
 
         return insertedUserId.id
+    } catch (error) {
+        throw error
+    }
+}
+
+export const deleteUser = async (value: any) => {
+    try {
+        const deleteUser = await db
+        .deleteFrom(`user`)
+        .where("id", "=", value.id)
+        .execute()
+
+        return deleteUser
     } catch (error) {
         throw error
     }

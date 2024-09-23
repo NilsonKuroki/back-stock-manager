@@ -1,17 +1,22 @@
-import { failure, success } from "@backend-stock-manager/core/responses"
+import { badRequest, failure, success, UNEXPECTED } from "@backend-stock-manager/core/schemas/responses"
 import { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from "aws-lambda";
-import { UNEXPECTED } from "@backend-stock-manager/core/errorTypes";
 import {signinCognito} from "@backend-stock-manager/core/cognito"
+import { signinSchema } from "@backend-stock-manager/core/schemas/validations/signinSchema"
 
 export const handler = async (_evt: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> => {
   try {
     const body = JSON.parse(_evt.body || "{}")
 
-    const inputCognito = {
-      username: body.username,
-      password: body.password
+    const { error, value } = signinSchema.validate(body);
+    if (error) {
+      return badRequest(_evt, error)
     }
-    const responseCognito: any = await signinCognito(inputCognito, process.env.cognitoClient)
+    
+    const inputCognito = {
+      username: value.username,
+      password: value.password
+    }
+    const responseCognito = await signinCognito(inputCognito, process.env.cognitoClient)
 
     let response
     if(responseCognito.ChallengeName){

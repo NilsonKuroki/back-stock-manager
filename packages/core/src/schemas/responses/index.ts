@@ -36,3 +36,8 @@ function buildResponse(evt: any, statusCode: number, body: any, headers: any, is
         isBase64Encoded
     };
 }
+
+export const UNEXPECTED = {
+    code: "#UNEXPECTED",
+    message: "Unexpected error"
+}

@@ -1,7 +1,5 @@
-import { failure, success } from "@backend-stock-manager/core/responses"
+import { failure, success, UNEXPECTED } from "@backend-stock-manager/core/src/schemas/responses"
 import { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from "aws-lambda";
-import { UNEXPECTED } from "@backend-stock-manager/core/errorTypes";
-import { CognitoIdentityProviderClient, RespondToAuthChallengeCommand, RespondToAuthChallengeCommandOutput } from "@aws-sdk/client-cognito-identity-provider";
 import { completeNewPasswordCognito } from "@backend-stock-manager/core/cognito";
 
 export const handler = async (_evt: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> => {
@@ -21,7 +19,6 @@ export const handler = async (_evt: APIGatewayProxyEventV2WithJWTAuthorizer): Pr
       response: response.AuthenticationResult?.IdToken
     })
   } catch (error: any) {
-    console.log(error)
     return failure(_evt, UNEXPECTED)
   }
 }

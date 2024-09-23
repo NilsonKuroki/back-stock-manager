@@ -6,9 +6,10 @@ import {
   InitiateAuthCommand,
   RespondToAuthChallengeCommand
 } from "@aws-sdk/client-cognito-identity-provider";
-import { badRequest, conflict } from "@backend-stock-manager/core/src/responses";
+import { conflict } from "./schemas/responses";
+import { CognitoSigninParams, CognitoCompleteNewPasswordParams, CognitoSignupParams} from "@backend-stock-manager/core/src/schemas/types/cognito"
 
-export const signinCognito = async (value: any, cognitoClient: any) => {
+export const signinCognito = async (value: CognitoSigninParams, cognitoClient: string|undefined) => {
   try {
     const config = {}
     const client = new CognitoIdentityProviderClient(config);
@@ -30,7 +31,7 @@ export const signinCognito = async (value: any, cognitoClient: any) => {
   }
 }
 
-export const completeNewPasswordCognito = async (value: any, cognitoClient: any) => {
+export const completeNewPasswordCognito = async (value: CognitoCompleteNewPasswordParams, cognitoClient: string|undefined) => {
   try {
     const config = {}
     const client = new CognitoIdentityProviderClient(config);
@@ -53,7 +54,7 @@ export const completeNewPasswordCognito = async (value: any, cognitoClient: any)
   }
 }
 
-export const signupUserCognito = async (_evt: any, value: any, userPoolId: any) => {
+export const signupUserCognito = async (_evt: any, value: CognitoSignupParams, userPoolId: any)=> {
   try {
     const clientCognito = new CognitoIdentityProviderClient({})
     let userCognitoExist = false
@@ -109,12 +110,12 @@ export const signupUserCognito = async (_evt: any, value: any, userPoolId: any) 
     const subAttribute = responseUserCognito.User.Attributes.find((attribute: any) => attribute.Name === 'sub');
     const subValue = subAttribute ? subAttribute.Value : null;
     return { id: subValue }
-  } catch (error: any) {
+  } catch (error) {
     throw error
   }
 }
 
-export async function deleteUserCognito(username: string, userPoolId: any) {
+export async function deleteUserCognito(username: string, userPoolId: string) {
   const clientCognito = new CognitoIdentityProviderClient({})
   const paramsAddToGroupUser = new AdminDeleteUserCommand({
     UserPoolId: userPoolId,
