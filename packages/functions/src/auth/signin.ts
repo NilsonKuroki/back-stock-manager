@@ -25,7 +25,7 @@ export const handler = async (_evt: APIGatewayProxyEventV2WithJWTAuthorizer): Pr
         challengeName: responseCognito.ChallengeName,
       }
     }else {
-      response = responseCognito.AuthenticationResult?.IdToken
+      response = { token: responseCognito.AuthenticationResult?.IdToken }
     }
     return success(_evt, {
       message: "Success signin",
